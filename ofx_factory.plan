@@ -1,0 +1,23 @@
+factory: # Top level namespace
+  name: qalx-orcaflex-example-factory
+
+  bots: # Define which bots we want to deploy
+    batch_bot:
+      source: # Define the source of the bot code
+        pypi: qalx-orcaflex # Pull the latest version of qalx-orcaflex from pypi
+      bot_path: qalx_orcaflex.bots:batch_bot # Import path for the batch_bot
+    sim_bot:
+      source:
+        pypi: qalx-orcaflex
+      bot_path: qalx_orcaflex.bots:sim_bot
+
+  stages: # Deployment configurations
+    local: # Deploy bots on the local machine
+      local_sector: # Sector is a deployment type e.g. local/aws
+        type: local
+        bots:
+          batch_bot: # References `batch_bot` defined above
+            queue-name: example-batch-queue # Bot will read from this queue
+          sim_bot: # References `sim_bot` defined above
+            queue-name: example-sim-queue
+            processes: 4 # Number of parallel processes
