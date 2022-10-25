@@ -2,14 +2,12 @@ import os.path
 import sys
 from os import PathLike
 from pprint import pprint
-from typing import Union
 
 import qalx_orcaflex.data_models as dm
 from qalx_orcaflex.core import DirectorySource, OrcaFlexBatch, QalxOrcaFlex
 
 
-def build_and_run_batch(batch_name, directory_path: Union[str, PathLike]):
-
+def build_and_run_batch(batch_name, directory_path: PathLike):
     # Instantiate `qalx` session
     qfx = QalxOrcaFlex()
 
@@ -37,17 +35,14 @@ def build_and_run_batch(batch_name, directory_path: Union[str, PathLike]):
 
     # Use context manager to specify .dat files and results
     with ofx_batch as batch:
-        if os.path.isabs(directory_path):
-            # If the directory path is an abspath
-            path = directory_path
-        else:
-            # Else form the abspath from the provided relpath
-            path = os.path.join(
+        if not os.path.isabs(directory_path):
+            # Form the abspath from the provided relpath
+            directory_path = os.path.join(
                 os.path.abspath(os.path.dirname(__file__)), directory_path
             )
 
-        # Create a `DirectorySource` object and add to batch
-        source = DirectorySource(path)
+        # Create a `DirectorySource` object that the batch can iterate through
+        source = DirectorySource(directory_path)
         batch.add(source=source, required_results=results)
 
     # Context manager waits for batch sims to complete and extract results
@@ -62,7 +57,6 @@ def build_and_run_batch(batch_name, directory_path: Union[str, PathLike]):
 
 
 if __name__ == "__main__":
-
     # Main functionality takes command line arguments and runs script
     _, batch_name, directory = sys.argv
     build_and_run_batch(batch_name, directory)
