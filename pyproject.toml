@@ -9,7 +9,7 @@ packages = [{include = "qalx_orcaflex_examples"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-qalx-orcaflex = "^0.2.2"
+qalx-orcaflex = "^0.2.3"
 pandas = "^1.5.1"
 XlsxWriter = "^3.0.3"
 openpyxl = "^3.0.10"

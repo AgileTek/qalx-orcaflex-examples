@@ -10,14 +10,36 @@ factory: # Top level namespace
       source:
         pypi: qalx-orcaflex
       bot_path: qalx_orcaflex.bots:sim_bot
+    reports_bot:
+      source:
+        path: example_3/bots # Package that custom bot code is in
+      bot_path: report:riser_bot # Bot path
 
   stages: # Deployment configurations
-    local: # Deploy bots on the local machine
-      local_sector: # Sector is a deployment type e.g. local/aws
-        type: local
+    stage-1: # Name of stage
+      local_sector: # Name of sector
+        type: local # Sector type can be `local` or `aws`
         bots:
           batch_bot: # References `batch_bot` defined above
             queue-name: example-batch-queue # Bot will read from this queue
           sim_bot: # References `sim_bot` defined above
             queue-name: example-sim-queue
             processes: 4 # Number of parallel processes
+    stage-2: # Name of stage
+      workflow: flow_1
+      local_sector: # Name of sector
+        type: local # Sector type can be `local` or `aws`
+        bots:
+          reports_bot:
+            queue-name: example-report-queue
+            processes: 1
+          batch_bot: # References `batch_bot` defined above
+            queue-name: example-batch-queue # Bot will read from this queue
+          sim_bot: # References `sim_bot` defined above
+            queue-name: example-sim-queue
+            processes: 4 # Number of parallel processes
+
+  workflows:
+    flow_1:
+      batch_bot:
+        - reports_bot
